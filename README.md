@@ -1,4 +1,4 @@
-# crazyswarm2_crazyflie
+# crazyswarm2
 
 
 pip install ruamel.yaml
