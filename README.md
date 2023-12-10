@@ -13,6 +13,6 @@ colcon build --symlink-install
 ```
 
 ## Usage
-alias cfserver='ros2 launch crazyflie launch.py'
-alias chooser='ros2 run crazyflie chooser.py'
-alias swarm_manager='ros2 run crazyflie_example swarm_manager.py'
+- alias cfserver='ros2 launch crazyflie launch.py'
+- alias chooser='ros2 run crazyflie chooser.py'
+- alias swarm_manager='ros2 run crazyflie_example swarm_manager.py'
