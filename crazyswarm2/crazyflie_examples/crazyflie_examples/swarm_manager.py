@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import collections
 
+ns = 'com1'
 Z = 1.0
 
 class CFWidget(Tkinter.Frame):
@@ -50,7 +51,7 @@ class SwarmManager():
         enabled = [name for name in self.cfg["robots"].keys() if self.cfg["robots"][name]["enabled"] == True]
 
         print("Waiting for the cfserver (ros2 launch crazyflie launch.py)")
-        swarm = Crazyswarm()
+        swarm = Crazyswarm(ns)
         self.timeHelper = swarm.timeHelper
         self.allcfs = swarm.allcfs
         print("Connected to the cfserver")

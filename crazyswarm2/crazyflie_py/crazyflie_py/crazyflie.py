@@ -109,7 +109,7 @@ class Crazyflie:
             paramTypeDict: dictionary of the parameter types.
 
         """
-        prefix = '/' + cfname
+        prefix = cfname
         self.prefix = prefix
         self.node = node
 
@@ -127,9 +127,9 @@ class Crazyflie:
         # # self.stopService = rospy.ServiceProxy(prefix + '/stop', Stop)
         self.goToService = node.create_client(GoTo, prefix + '/go_to')
         self.goToService.wait_for_service()
-        self.uploadTrajectoryService = node.create_client(
-            UploadTrajectory, prefix + '/upload_trajectory')
-        self.uploadTrajectoryService.wait_for_service()
+        # self.uploadTrajectoryService = node.create_client(
+        #     UploadTrajectory, prefix + '/upload_trajectory')
+        # self.uploadTrajectoryService.wait_for_service()
         self.startTrajectoryService = node.create_client(
             StartTrajectory, prefix + '/start_trajectory')
         self.startTrajectoryService.wait_for_service()
@@ -137,11 +137,11 @@ class Crazyflie:
             NotifySetpointsStop, prefix + '/notify_setpoints_stop')
         self.notifySetpointsStopService.wait_for_service()
         self.setParamsService = node.create_client(
-            SetParameters, '/crazyflie_server/set_parameters')
+            SetParameters, 'crazyflie_server/set_parameters')
         self.setParamsService.wait_for_service()
 
         # Query some settings
-        getParamsService = node.create_client(GetParameters, '/crazyflie_server/get_parameters')
+        getParamsService = node.create_client(GetParameters, 'crazyflie_server/get_parameters')
         getParamsService.wait_for_service()
         req = GetParameters.Request()
         req.names = ['robots.{}.initial_position'.format(cfname), 'robots.{}.uri'.format(cfname)]
@@ -504,7 +504,7 @@ class Crazyflie:
             value (Any): The parameter's value.
 
         """
-        param_name = self.prefix[1:] + '.params.' + name
+        param_name = self.prefix + '.params.' + name
         param_type = self.paramTypeDict[name]
         if param_type == ParameterType.PARAMETER_INTEGER:
             param_value = ParameterValue(type=param_type, integer_value=int(value))
@@ -749,9 +749,9 @@ class CrazyflieServer(rclpy.node.Node):
 
     """
 
-    def __init__(self):
+    def __init__(self, ns=''):
         """Initialize the server. Waits for all ROS services before returning."""
-        super().__init__('CrazyflieAPI')
+        super().__init__('CrazyflieAPI', namespace = ns)
         self.emergencyService = self.create_client(Empty, 'all/emergency')
         self.emergencyService.wait_for_service()
         self.takeoffService = self.create_client(Takeoff, 'all/takeoff')
@@ -763,7 +763,7 @@ class CrazyflieServer(rclpy.node.Node):
         self.startTrajectoryService = self.create_client(StartTrajectory, 'all/start_trajectory')
         self.startTrajectoryService.wait_for_service()
         self.setParamsService = self.create_client(
-            SetParameters, '/crazyflie_server/set_parameters')
+            SetParameters, 'crazyflie_server/set_parameters')
         self.setParamsService.wait_for_service()
 
         self.cmdFullStatePublisher = self.create_publisher(
@@ -774,13 +774,13 @@ class CrazyflieServer(rclpy.node.Node):
         cfnames = []
         for srv_name, srv_types in self.get_service_names_and_types():
             if 'crazyflie_interfaces/srv/StartTrajectory' in srv_types:
-                # remove '/' and '/start_trajectory'
-                cfname = srv_name[1:-17]
+                # remove namespace and '/start_trajectory'
+                cfname = srv_name[len(ns)+2:-17]
                 if cfname != 'all':
                     cfnames.append(cfname)
 
         # Query all parameters
-        listParamsService = self.create_client(ListParameters, '/crazyflie_server/list_parameters')
+        listParamsService = self.create_client(ListParameters, 'crazyflie_server/list_parameters')
         listParamsService.wait_for_service()
         req = ListParameters.Request()
         req.depth = ListParameters.Request.DEPTH_RECURSIVE
@@ -799,7 +799,7 @@ class CrazyflieServer(rclpy.node.Node):
 
         # Find the types for the parameters and store them
         describeParametersService = self.create_client(
-            DescribeParameters, '/crazyflie_server/describe_parameters')
+            DescribeParameters, 'crazyflie_server/describe_parameters')
         describeParametersService.wait_for_service()
         req = DescribeParameters.Request()
         req.names = params
