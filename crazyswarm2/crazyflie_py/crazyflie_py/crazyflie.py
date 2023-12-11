@@ -749,7 +749,7 @@ class CrazyflieServer(rclpy.node.Node):
 
     """
 
-    def __init__(self, ns=''):
+    def __init__(self, cfnames, ns=''):
         """Initialize the server. Waits for all ROS services before returning."""
         super().__init__('CrazyflieAPI', namespace = ns)
         self.emergencyService = self.create_client(Empty, 'all/emergency')
@@ -771,13 +771,13 @@ class CrazyflieServer(rclpy.node.Node):
         self.cmdFullStateMsg = FullState()
         self.cmdFullStateMsg.header.frame_id = '/world'
 
-        cfnames = []
-        for srv_name, srv_types in self.get_service_names_and_types():
-            if 'crazyflie_interfaces/srv/StartTrajectory' in srv_types:
-                # remove namespace and '/start_trajectory'
-                cfname = srv_name[len(ns)+2:-17]
-                if cfname != 'all':
-                    cfnames.append(cfname)
+        # cfnames = []
+        # for srv_name, srv_types in self.get_service_names_and_types():
+        #     if 'crazyflie_interfaces/srv/StartTrajectory' in srv_types:
+        #         # remove namespace and '/start_trajectory'
+        #         cfname = srv_name[len(ns)+2:-17]
+        #         if cfname != 'all':
+        #             cfnames.append(cfname)
 
         # Query all parameters
         listParamsService = self.create_client(ListParameters, 'crazyflie_server/list_parameters')
