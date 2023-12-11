@@ -10,6 +10,8 @@ from launch.substitutions import LaunchConfiguration, PythonExpression
 
 
 def generate_launch_description():
+    ns = 'com1'
+
     # load crazyflies
     crazyflies_yaml = os.path.join(
         get_package_share_directory('crazyflie'),
@@ -64,7 +66,7 @@ def generate_launch_description():
         DeclareLaunchArgument('debug', default_value='False'),
         Node(
             package='motion_capture_tracking',
-            namespace='com1',
+            namespace=ns,
             executable='motion_capture_tracking_node',
             condition=LaunchConfigurationNotEquals('backend','sim'),
             name='motion_capture_tracking',
@@ -73,7 +75,7 @@ def generate_launch_description():
         ),
         Node(
             package='crazyflie',
-            namespace='com1',
+            namespace=ns,
             executable='teleop',
             name='teleop',
             remappings=[
@@ -88,7 +90,7 @@ def generate_launch_description():
         ),
         Node(
             package='crazyflie',
-            namespace='com1',
+            namespace=ns,
             executable='crazyflie_server.py',
             condition=LaunchConfigurationEquals('backend','cflib'),
             name='crazyflie_server',
@@ -97,7 +99,7 @@ def generate_launch_description():
         ),
         Node(
             package='crazyflie',
-            namespace='com1',
+            namespace=ns,
             executable='crazyflie_server',
             condition=LaunchConfigurationEquals('backend','cpp'),
             name='crazyflie_server',
@@ -107,7 +109,7 @@ def generate_launch_description():
         ),
         Node(
             package='crazyflie_sim',
-            namespace='com1',
+            namespace=ns,
             executable='crazyflie_server',
             condition=LaunchConfigurationEquals('backend','sim'),
             name='crazyflie_server',
