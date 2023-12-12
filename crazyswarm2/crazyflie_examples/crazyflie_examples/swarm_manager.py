@@ -17,6 +17,7 @@ from matplotlib import cm
 import collections
 
 ns = 'com1'
+# ns = ''
 Z = 1.0
 
 class CFWidget(Tkinter.Frame):
@@ -55,11 +56,6 @@ class SwarmManager():
         self.timeHelper = swarm.timeHelper
         self.allcfs = swarm.allcfs
         print("Connected to the cfserver")
-        
-        # Configure the CFs so that the LED ring displays the solid color.
-        # Overrides the launch file and the firmware default.
-        for cf in self.allcfs.crazyflies:
-            cf.setParam("ring.effect", 7)
 
         # compute absolute pixel coordinates from the initial positions
         positions = [node["initial_position"] for node in self.cfg["robots"].values()]
@@ -183,18 +179,8 @@ class SwarmManager():
 
     def takeoff(self):
         cfs = self.selected_cfs()
-        N = len(cfs)
-
-        hsv_cmap = mpl.colormaps['hsv']
-        hsv_norm = mpl.colors.Normalize(vmin=0, vmax=1)
-        hsv_scalarMap = cm.ScalarMappable(norm=hsv_norm, cmap=hsv_cmap)
-
-        count = 0.0
         for cf in cfs:
             cf.takeoff(targetHeight=Z, duration=1.0 + Z)
-            color = hsv_scalarMap.to_rgba(float(count)/N)
-            cf.setLEDColor(color[0],color[1],color[2])
-            count = count + 1.0
         self.timeHelper.sleep(1.0 + Z)
         print("Take off")
 
